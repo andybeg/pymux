@@ -1,11 +1,8 @@
 Pymux
 =====
 
-WARNING: This project requires maintenance. The current master branch requires
-an old version of both prompt_toolkit and ptterm. There is a prompt-toolkit-3.0
-branch here that is compatible with the latest prompt_toolkit and the latest
-commit of the master branch of ptterm, but for that branch, only `pymux
-standalone` is working at the moment.
+WARNING: This project requires maintenance. Modern Python support is evolving
+and currently focuses on running ``pymux standalone`` first.
 
 
 *A terminal multiplexer (like tmux) in Python*
@@ -24,11 +21,18 @@ issue, I appreciate it.
 Installation
 ------------
 
-Simply install ``pymux`` using pip:
+Install ``pymux`` using pip:
 
 ::
 
     pip install pymux
+
+For local development on Windows with Python 3.13/3.14, use the bootstrap
+script from the repository root:
+
+::
+
+    powershell -ExecutionPolicy Bypass -File scripts/bootstrap_py313_314_windows.ps1 -PythonExe .\.venv314\Scripts\python.exe
 
 Start it by typing ``pymux``.
 
