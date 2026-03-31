@@ -26,6 +26,7 @@ Options:
 from __future__ import unicode_literals, absolute_import
 
 from prompt_toolkit.output import ColorDepth
+from prompt_toolkit.utils import is_windows
 from pymux.main import Pymux
 from pymux.client import create_client, list_clients
 from pymux.utils import daemonize
@@ -134,6 +135,11 @@ def run():
 
     elif not socket_name:
         # Run client/server combination.
+        if is_windows():
+            # Windows has no os.fork(), so run in standalone mode by default.
+            mux.run_standalone(color_depth=color_depth)
+            return
+
         socket_name = mux.listen_on_socket(socket_name)
         pid = daemonize()
 

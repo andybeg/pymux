@@ -3,7 +3,7 @@ Common Win32 pipe operations.
 """
 from __future__ import unicode_literals
 from ctypes import windll, byref, create_string_buffer
-from ctypes.wintypes import DWORD, BOOL
+from ctypes.wintypes import DWORD, BOOL, HANDLE
 from prompt_toolkit.eventloop import get_event_loop, From, Return, Future
 from ptterm.backends.win32_pipes import OVERLAPPED
 from .base import BrokenPipeError
@@ -72,7 +72,7 @@ def create_event():
     )
     if not event:
         raise Exception('event creation failed.')
-    return event
+    return HANDLE(event)
 
 
 def read_message_from_pipe(pipe_handle):
@@ -197,6 +197,9 @@ def wait_for_event(event):
     """
     Wraps a win32 event into a `Future` and wait for it.
     """
+    if isinstance(event, int):
+        event = HANDLE(event)
+
     f = Future()
     def ready():
         get_event_loop().remove_win32_handle(event)
