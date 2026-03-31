@@ -7,7 +7,7 @@ import threading
 import time
 import traceback
 import weakref
-from asyncio import Future, get_event_loop
+import asyncio
 from typing import Optional
 
 from prompt_toolkit.application import Application
@@ -284,7 +284,7 @@ class Pymux:
         #: List of clients.
         self._runs_standalone = False
         self.connections = []
-        self.done_f = Future()
+        self.done_f = None
 
         self._startup_done = False
         self.source_file = source_file
@@ -501,7 +501,8 @@ class Pymux:
     def stop(self):
         for app in self.apps:
             app.exit()
-        self.done_f.set_result(None)
+        if self.done_f is not None and not self.done_f.done():
+            self.done_f.set_result(None)
 
     def create_window(
         self,
@@ -609,6 +610,10 @@ class Pymux:
         return self.socket_name
 
     def run_server(self):
+        loop = asyncio.get_event_loop()
+        if self.done_f is None or self.done_f.done():
+            self.done_f = loop.create_future()
+
         # Ignore keyboard. (When people run "pymux server" and press Ctrl-C.)
         # Pymux has to be terminated by termining all the processes running in
         # its panes.
@@ -622,7 +627,7 @@ class Pymux:
 
         # Run eventloop.
         try:
-            get_event_loop().run_until_complete(self.done_f)
+            loop.run_until_complete(self.done_f)
         except:
             # When something bad happens, always dump the traceback.
             # (Otherwise, when running as a daemon, and stdout/stderr are not

@@ -34,6 +34,22 @@ script from the repository root:
 
     powershell -ExecutionPolicy Bypass -File scripts/bootstrap_py313_314_windows.ps1 -PythonExe .\.venv314\Scripts\python.exe
 
+Troubleshooting (Python 3.13/3.14 on Windows)
+----------------------------------------------
+
+If startup fails with ``RuntimeError: There is no current event loop in thread
+'MainThread'``, re-run the patch helper in the same environment:
+
+::
+
+    .\.venv314\Scripts\python.exe scripts\patch_ptterm_win.py
+
+Then start again:
+
+::
+
+    .\.venv314\Scripts\python.exe -m pymux
+
 Start it by typing ``pymux``.
 
 

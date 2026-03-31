@@ -239,6 +239,26 @@ def patch_win32_pipes_py(base: Path) -> None:
     file_path.write_text(text, encoding="utf-8")
 
 
+def patch_process_py(base: Path) -> None:
+    file_path = base / "process.py"
+    text = file_path.read_text(encoding="utf-8")
+
+    text = _replace_or_raise(
+        text,
+        "from asyncio import get_event_loop\n",
+        "",
+        file_path,
+    )
+    text = _replace_or_raise(
+        text,
+        "        self.loop = get_event_loop()\n",
+        "",
+        file_path,
+    )
+
+    file_path.write_text(text, encoding="utf-8")
+
+
 def main() -> None:
     spec = importlib.util.find_spec("ptterm")
     if spec is None or spec.origin is None:
@@ -246,6 +266,7 @@ def main() -> None:
 
     ptterm_base = Path(spec.origin).parent
     patch_win32_py(ptterm_base)
+    patch_process_py(ptterm_base)
     print(f"Patched ptterm in: {ptterm_base}")
 
 
